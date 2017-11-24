@@ -26,6 +26,13 @@ var (
 
 type server struct{}
 
+type listall []*ListUp
+
+type ListUp struct {
+	Id    int    `db:"id"`
+	Title string `db:"title"`
+}
+
 type Book struct {
 	Id     int    `db:"id"`
 	Title  string `db:"title"`
@@ -50,6 +57,16 @@ func arrayBook(pbbook *pb.Book, book *Book) error {
 	return nil
 }
 
+//func arraylist(lists *[]pb.Listup, books *ListUp) error {
+//	for _, i := range books {
+//		lists[i] = pb.Listup{
+//			Id:    books[i].Id,
+//			Title: books[i].Title,
+//		}
+//	}
+//	return nil
+//}
+
 func (s *server) Fetch(ctx context.Context, in *pb.FetchRequest) (*pb.Book, error) {
 	var book Book
 	pbbook := pb.Book{}
@@ -67,7 +84,18 @@ func (s *server) Add(ctx context.Context, in *pb.Book) (*pb.Empty, error) {
 }
 
 func (s *server) ListAll(ctx context.Context, in *pb.Empty) (*pb.ListAllResponse, error) {
-	return &pb.ListAllResponse{}, nil
+	var books listall
+	var lists []*pb.Listup
+	sess.Select("id, title").From(tablename).Load(&books)
+
+	for _, res := range books {
+		lists = append(lists, &pb.Listup{
+			Id:    strconv.Itoa(res.Id),
+			Title: res.Title,
+		})
+	}
+
+	return &pb.ListAllResponse{lists}, nil
 }
 
 func (s *server) Update(ctx context.Context, in *pb.UpdateRequest) (*pb.UpdateResponse, error) {

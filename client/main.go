@@ -28,7 +28,7 @@ var (
 
 func main() {
 	var mode string
-	flag.StringVar(&mode, "mode", "", "[fetch|add|update|delete]を指定")
+	flag.StringVar(&mode, "mode", "", "[fetch|add|list|update|delete]を指定")
 	flag.StringVar(&id, "id", "", "idを指定")
 	flag.StringVar(&title, "title", "", "titleを指定")
 	flag.StringVar(&author, "author", "", "authorを指定")
@@ -64,6 +64,11 @@ func main() {
 		}
 		fmt.Println("success add the params")
 
+	case "list":
+		if err := list(ctx, &c); err != nil {
+			log.Fatal(err)
+		}
+
 	case "update":
 		if id == "" || title == "" || author == "" || isbn13 == "" || state == "" || pic == "" {
 			log.Fatalf("no set params are id, title, author, isbn13, state, pic")
@@ -84,7 +89,7 @@ func main() {
 		}
 		fmt.Println("delete success")
 	default:
-		log.Fatal("Please set the mode [fetch/add/update/delete]")
+		log.Fatal("Please set the mode [fetch/add/list/update/delete]\nLike this '-mode=add -id=10'")
 	}
 }
 
@@ -121,6 +126,23 @@ func add(ctx context.Context, c *pb.ServiceClient, data []string) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func list(ctx context.Context, c *pb.ServiceClient) error {
+	res, err := (*c).ListAll(ctx, &pb.Empty{})
+	if err != nil {
+		return err
+	}
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"id", "title"})
+
+	for _, v := range res.Books {
+		table.Append([]string{v.Id, v.Title})
+	}
+
+	fmt.Println("ListAll:")
+	table.Render()
 	return nil
 }
 
