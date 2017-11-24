@@ -17,6 +17,11 @@ message Book {
   string pic = 6;
 }
 
+message Listup {
+  string id = 1;
+  string title = 2;
+}
+
 message Empty {
 
 }
@@ -26,8 +31,7 @@ message FetchRequest {
 }
 
 message ListAllResponse {
-  string id = 1;
-  string title = 2;
+  repeated Listup books = 1;
 }
 
 message UpdateRequest {
