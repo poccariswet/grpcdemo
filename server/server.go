@@ -57,16 +57,6 @@ func arrayBook(pbbook *pb.Book, book *Book) error {
 	return nil
 }
 
-//func arraylist(lists *[]pb.Listup, books *ListUp) error {
-//	for _, i := range books {
-//		lists[i] = pb.Listup{
-//			Id:    books[i].Id,
-//			Title: books[i].Title,
-//		}
-//	}
-//	return nil
-//}
-
 func (s *server) Fetch(ctx context.Context, in *pb.FetchRequest) (*pb.Book, error) {
 	var book Book
 	pbbook := pb.Book{}
