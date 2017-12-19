@@ -16,10 +16,6 @@ const (
 	port = "1111"
 )
 
-var (
-	data []string
-)
-
 type BookInfo struct {
 	id     string
 	title  string
